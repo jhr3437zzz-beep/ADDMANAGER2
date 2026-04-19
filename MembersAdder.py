@@ -24,7 +24,7 @@ if not client.is_user_authorized():
     client.sign_in(phone, input('Enter the code: '))
 
 users = []
-csv_path = input("Enter CSV path (default: members.csv): ").strip() or "members.csv"
+csv_path = "members.csv"
 
 if not os.path.isfile(csv_path):
     sys.exit("CSV file not found: {}".format(csv_path))
@@ -61,15 +61,17 @@ for chat in chats:
     except:
         continue
 
-print('Choose a group/channel to add members:')
-i = 0
+target_name = "BINSPERU HOUSE 🇵🇪"
+target_group = None
 for target in targets:
-    target_type = 'Group' if getattr(target, 'megagroup', False) else 'Channel'
-    print(str(i) + '- [{}] {}'.format(target_type, target.title))
-    i += 1
+    if target.title == target_name:
+        target_group = target
+        break
 
-g_index = input("Enter a Number: ")
-target_group = targets[int(g_index)]
+if target_group is None:
+    sys.exit("Group '{}' not found. Available groups: {}".format(target_name, [t.title for t in targets]))
+
+print("Adding members to: {}".format(target_group.title))
 
 if getattr(target_group, 'broadcast', False) and not getattr(target_group, 'megagroup', False):
     sys.exit(
@@ -79,7 +81,7 @@ if getattr(target_group, 'broadcast', False) and not getattr(target_group, 'mega
 
 target_group_entity = InputPeerChannel(target_group.id, target_group.access_hash)
 
-mode = int(input("Enter 1 to add by username or 2 to add by ID: "))
+mode = 1  # 1 = add by username, 2 = add by ID (change here if needed)
 
 n = 0
 
